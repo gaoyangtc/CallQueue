@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BluetoothPrinter</string>
+
+    <string name="switch_bluetooth_open">开启蓝牙</string>
+    <string name="switch_bluetooth_close">关闭蓝牙</string>
+
+    <string name="search_bluetooth">搜索设备</string>
+
+    <string name="unpaired_bluetooth_tip">未连接设备</string>
+    <string name="paired_bluetooth_tip">已连接设备</string>
+
+    <string name="dialog_loading">请稍等...</string>
+
+    <string name="bluetooth_loading">搜索蓝牙设备中...</string>
+
+</resources>

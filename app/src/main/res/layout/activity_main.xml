@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gaoyang.bluetoothprinter.MainActivity"
+    >
+
+    <Button
+        android:id="@+id/act_main_bluetooth_open"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/switch_bluetooth_open"
+        />
+
+    <Button
+        android:id="@+id/act_main_bluetooth_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/act_main_bluetooth_open"
+        android:text="@string/search_bluetooth"
+        />
+
+    <TextView
+        android:id="@+id/act_main_bluetooth_unpaired"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/act_main_bluetooth_search"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/unpaired_bluetooth_tip"
+        android:textColor="#333333"
+        />
+
+    <ListView
+        android:id="@+id/act_main_bluetooth_list_unpaired"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/act_main_bluetooth_unpaired"
+        />
+
+    <TextView
+        android:id="@+id/act_main_bluetooth_paired"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/act_main_bluetooth_list_unpaired"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/paired_bluetooth_tip"
+        android:textColor="#333333"
+        />
+
+    <ListView
+        android:id="@+id/act_main_bluetooth_list_paired"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@id/act_main_bluetooth_paired"
+        />
+
+</RelativeLayout>
