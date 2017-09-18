@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -22,12 +21,14 @@ import com.gaoyang.bluetoothprinter.R;
 import com.gaoyang.bluetoothprinter.adapter.BaseListAdapter;
 import com.gaoyang.bluetoothprinter.adapter.BusinessAdapter;
 import com.gaoyang.bluetoothprinter.module.BusinessInfo;
+import com.gaoyang.bluetoothprinter.module.SiteInfo;
 import com.gaoyang.bluetoothprinter.resource.URLResource;
 import com.gaoyang.bluetoothprinter.utils.AndroidUtil;
 import com.gaoyang.bluetoothprinter.utils.JsonHelper;
 import com.gaoyang.bluetoothprinter.utils.MD5Util;
 import com.gaoyang.bluetoothprinter.utils.PrintUtil;
 import com.gaoyang.bluetoothprinter.utils.ToastUtil;
+import com.gaoyang.bluetoothprinter.utils.ZXingUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -60,6 +61,8 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private TextView mBluetoothName;
     private int mTotalPage;
     private ImageView[] mPointImg;
+    private SiteInfo mSiteInfo;
+    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +99,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     public void onConnected(BluetoothSocket socket, int taskType) {
         switch (taskType) {
             case TASK_TYPE_PRINT:
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.test_image);
-                PrintUtil.printTest(socket, bitmap);
+                PrintUtil.printTest(socket, mBitmap, mSiteInfo.getNumber(), mSiteInfo.getWaitCount(), mSiteInfo.getBusinessInfo());
                 break;
         }
     }
@@ -132,14 +134,14 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
             mPointImg = new ImageView[mTotalPage];
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(AndroidUtil.dip2px(this, 10),
                     AndroidUtil.dip2px(this, 10));
-            lp.rightMargin = AndroidUtil.dip2px(this, 2);
-            lp.leftMargin = AndroidUtil.dip2px(this, 2);
+            lp.rightMargin = AndroidUtil.dip2px(this, 5);
+            lp.leftMargin = AndroidUtil.dip2px(this, 5);
             for (int i = 0; i < mTotalPage; i++) {
                 mPointImg[i] = new ImageView(this);
                 if (i == 0) {
-                    mPointImg[i].setImageResource(R.mipmap.icon_pager_checked);
+                    mPointImg[i].setImageResource(R.mipmap.point_select);
                 } else {
-                    mPointImg[i].setImageResource(R.mipmap.icon_pager);
+                    mPointImg[i].setImageResource(R.mipmap.point_normal);
                 }
                 mPointImg[i].setScaleType(ImageView.ScaleType.FIT_XY);
                 mPointContainer.addView(mPointImg[i], lp);
@@ -176,9 +178,9 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     public void onPageSelected(int position) {
         for (int i = 0; i < mTotalPage; i++) {
             if (i == position) {
-                mPointImg[i].setImageResource(R.mipmap.icon_pager_checked);
+                mPointImg[i].setImageResource(R.mipmap.point_select);
             } else {
-                mPointImg[i].setImageResource(R.mipmap.icon_pager);
+                mPointImg[i].setImageResource(R.mipmap.point_normal);
             }
         }
     }
@@ -329,16 +331,18 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         String signature = upMD5;
         System.out.println("signature=" + signature);
 
-        //  请求参数为IMEI, businessId, signature
+        // 请求参数为IMEI, businessId, signature
         RequestBody body = new FormBody.Builder()
                 .add("IMEI", IMEI)
                 .add("businessId", businessId)
                 .add("signature", signature)
                 .build();
+
         Request request = new Request.Builder()
                 .url(URLResource.getOrderUrl())
                 .post(body)
                 .build();
+
         OkHttpClient okHttpClient = new OkHttpClient();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -348,8 +352,39 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 if (response.isSuccessful()) {
                     // 请求成功
                     String str = response.body().string();
-                    System.out.println("doCallNum请求成功" + str);
-
+                    try {
+                        JSONObject json = new JSONObject(str);
+                        if (JsonHelper.getInt(json, "e") == 0) {
+                            json = JsonHelper.getJsonObject(json, "d");
+                            if (json != null) {
+                                JSONArray siteList = JsonHelper.getJsonArray(json, "site");
+                                if (siteList != null && siteList.length() > 0) {
+                                    mSiteInfo = new SiteInfo();
+                                    for (int i = 0; i < siteList.length(); i++) {
+                                        json = siteList.optJSONObject(i);
+                                        if (i == 0) {
+                                            mSiteInfo.setNumber(JsonHelper.getString(json, "text"));
+                                        }
+                                        if (i == 1) {
+                                            mSiteInfo.setWaitCount(JsonHelper.getString(json, "text"));
+                                        }
+                                        if (i == 2) {
+                                            mSiteInfo.setBusinessInfo(JsonHelper.getString(json, "text"));
+                                        }
+                                        if (i == 3) {
+                                            String url = JsonHelper.getString(json, "text");
+                                            String width = JsonHelper.getString(json, "width");
+                                            String height = JsonHelper.getString(json, "height");
+                                            mBitmap = ZXingUtils.createQRImage(url, Integer.valueOf(width), Integer.valueOf(height));
+                                        }
+                                    }
+                                    connectDevice(TASK_TYPE_PRINT);
+                                }
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     // 请求失败
                     System.out.println("doCallNum请求失败");

@@ -217,7 +217,7 @@ public class PrintUtil {
     }
 
     public void printDashLine() throws IOException {
-        printText("--------------------------------");
+        printText("................................");
     }
 
     public void printBitmap(Bitmap bmp) throws IOException {
@@ -322,54 +322,37 @@ public class PrintUtil {
         return targetBmp;
     }
 
-    public static void printTest(BluetoothSocket bluetoothSocket, Bitmap bitmap) {
+    public static void printTest(BluetoothSocket bluetoothSocket, Bitmap bitmap, String number, String count, String business) {
 
         try {
             PrintUtil pUtil = new PrintUtil(bluetoothSocket.getOutputStream(), "GBK");
             // 店铺名 居中 放大
             pUtil.printAlignment(1);
-            pUtil.printLargeText("解忧杂货店");
-            pUtil.printLine();
-            pUtil.printAlignment(0);
-            pUtil.printLine();
-
-            pUtil.printTwoColumn("时间:", "2017-05-09 15:50:41");
-            pUtil.printLine();
-
-            pUtil.printTwoColumn("订单号:", System.currentTimeMillis() + "");
-            pUtil.printLine();
-
-            pUtil.printTwoColumn("付款人:", "VitaminChen");
+            pUtil.printText("北师大服务大厅欢迎您!");
             pUtil.printLine();
 
             // 分隔线
             pUtil.printDashLine();
+            pUtil.printAlignment(0);
+            pUtil.printLine();
             pUtil.printLine();
 
-            //打印商品列表
-            pUtil.printText("商品");
-            pUtil.printTabSpace(2);
-            pUtil.printText("数量");
-            pUtil.printTabSpace(1);
-            pUtil.printText("    单价");
+            pUtil.printText(number);
+            pUtil.printLine();
             pUtil.printLine();
 
-            pUtil.printThreeColumn("iphone6", "1", "4999.00");
-            pUtil.printThreeColumn("测试一个超长名字的产品看看打印出来会怎么样哈哈哈哈哈哈", "1", "4999.00");
+            pUtil.printText(count);
+            pUtil.printLine();
+            pUtil.printLine();
 
+            pUtil.printText(business);
+            pUtil.printLine();
+
+            // 分隔线
             pUtil.printDashLine();
-            pUtil.printLine();
 
-            pUtil.printTwoColumn("订单金额:", "9998.00");
+            pUtil.printText("   欢迎扫描二维码下载\"为我点赞\"!");
             pUtil.printLine();
-
-            pUtil.printTwoColumn("实收金额:", "10000.00");
-            pUtil.printLine();
-
-            pUtil.printTwoColumn("找零:", "2.00");
-            pUtil.printLine();
-
-            pUtil.printDashLine();
 
             pUtil.printBitmap(bitmap);
 
