@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BluetoothPrinter</string>
+    <string name="app_name">为我点赞(Pad)</string>
 
     <string name="switch_bluetooth_open">开启蓝牙</string>
     <string name="switch_bluetooth_close">关闭蓝牙</string>

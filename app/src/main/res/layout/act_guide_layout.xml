@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_full_screen_background"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:background="#ffffff"
+        >
+
+        <ImageView
+            android:layout_width="171dp"
+            android:layout_height="17dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:background="@mipmap/img_title_like"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="选择一个已配对的打印设备"
+        android:textColor="#333333"
+        android:textSize="16sp"
+        />
+
+    <ListView
+        android:id="@+id/act_guide_bluetooth_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        >
+
+        <TextView
+            android:id="@+id/act_guide_bluetooth_switch"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_bluetooth_switch"
+            android:gravity="center"
+            android:text="点击开启蓝牙"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            />
+
+        <TextView
+            android:id="@+id/act_guide_bluetooth_jump"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_bluetooth_switch"
+            android:gravity="center"
+            android:text="完成"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
