@@ -3,6 +3,7 @@ package com.gaoyang.bluetoothprinter.ui;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -35,9 +37,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -48,6 +54,7 @@ import okhttp3.Response;
 
 public class CallNumberActivity extends BaseActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
+    private static final String APP_KEY = "z9p#5f02xcmw!drVxQ^uL6ojB&";
     private final static int TASK_TYPE_PRINT = 2;
 
     private BluetoothDevice mBluetoothDevice;
@@ -58,11 +65,16 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private LinearLayout mPointContainer;
 
+    private Socket mSocket;
+
     private TextView mBluetoothName;
     private int mTotalPage;
     private ImageView[] mPointImg;
     private SiteInfo mSiteInfo;
     private Bitmap mBitmap;
+    private String mIMEI;
+
+    private SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,30 +82,76 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_call_number);
 
+        try {
+            mSocket = IO.socket("http://47.93.249.4:2120");
+
+//            mSocket.on(Socket.EVENT_CONNECT, onConnect);
+//            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+//            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+//            mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+            mSocket.on("connect", onConnect);
+            mSocket.on("new_msg", onNewMessage);
+            mSocket.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         initView();
     }
 
     private void initView() {
+        mBluetoothName = (TextView) findViewById(R.id.act_call_number_device_name);
+
+        mSharedPreferences = getSharedPreferences("loginUser", Context.MODE_PRIVATE);
+        String imei = mSharedPreferences.getString("IMEI", "");
+        if (TextUtils.isEmpty(imei)) {
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.clear();
+            editor.commit();
+            bindDevice();
+        } else {
+            mBluetoothName.setText(imei);
+        }
         mCallNumberPager = (ViewPager) findViewById(R.id.act_call_number_pager);
         mBusinessAdapter = new BusinessAdapter();
         mCallNumberPager.setAdapter(mBusinessAdapter);
         mBusinessInfos = new ArrayList<>();
-
-        mBluetoothName = (TextView) findViewById(R.id.act_call_number_device_name);
-        mBluetoothName.setOnClickListener(this);
 
         mCallNumberPager = (ViewPager) findViewById(R.id.act_call_number_pager);
         mCallNumberPager.setOnPageChangeListener(this);
         mPointContainer = (LinearLayout) findViewById(R.id.act_call_number_point_layout);
 
         mBluetoothDevice = getIntent().getParcelableExtra("BluetoothInfo");
-        if (mBluetoothDevice != null) {
-            mBluetoothName.setText(mBluetoothDevice.getName());
-        }
 
-//        HomeListManager.getInstance().bindDevice(this);
         getHomeList();
     }
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ToastUtil.show("连接成功");
+                    mSocket.emit("login", "123");
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String data = (String) args[0];
+
+                    Log.e("gaoy-->>>", data);
+                }
+            });
+        }
+    };
 
     @Override
     public void onConnected(BluetoothSocket socket, int taskType) {
@@ -318,11 +376,8 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private void getOrder(String businessId) {
         // 设备串号
         String IMEI = "123";
-        // 加密用的key
-        String key = "z9p#5f02xcmw!drVxQ^uL6ojB&";
-
         // 将参数按ASCII码从小到大排序并拼串(大写字母ASCII值小于小写字母 A-Z=65-90 a-z=97-122)
-        String str = "IMEI=" + IMEI + "&businessId=" + businessId + "&key=" + key;
+        String str = "IMEI=" + IMEI + "&businessId=" + businessId + "&key=" + APP_KEY;
         MD5Util getMD5 = new MD5Util();
         // 对拼串进行MD5处理
         String md5 = getMD5.GetMD5Code(str);
@@ -395,6 +450,88 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 // TODO Auto-generated method stub
                 // 请求失败
                 System.out.println("doCallNumOnFailure" + arg0);
+            }
+        });
+    }
+
+    /**
+     * 绑定设备接口
+     */
+    public void bindDevice() {
+        // 将参数按ASCII码从小到大排序并拼串(大写字母ASCII值小于小写字母 A-Z=65-90 a-z=97-122)
+        String str = "IMEI=" + "123" + "&key=" + APP_KEY;
+        MD5Util getMD5 = new MD5Util();
+        // 对拼串进行MD5处理
+        String md5 = getMD5.GetMD5Code(str);
+        // 将MD5结果大写 赋值给signature
+        String upMD5 = md5.toUpperCase();
+        String signature = upMD5;
+        System.out.println("signature=" + signature);
+
+        RequestBody body = new FormBody.Builder()
+                .add("IMEI", "123")
+                .add("signature", signature)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(URLResource.getBindDeviceUrl())
+                .post(body)
+                .build();
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            public void onResponse(Call arg0, Response response) throws IOException {
+                if (response.isSuccessful()) { // 请求成功
+                    // 请求成功
+                    String str = response.body().string();
+                    try {
+                        JSONObject json = new JSONObject(str);
+                        if (JsonHelper.getInt(json, "e") == 0) {
+                            json = JsonHelper.getJsonObject(json, "d");
+                            if (json != null) {
+                                json = JsonHelper.getJsonObject(json, "deviceInfo");
+                                mIMEI = JsonHelper.getString(json, "IMEI");
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mBluetoothName.setText(mIMEI);
+                                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                                        editor.putString("IMEI", mIMEI);
+                                        editor.commit();
+                                    }
+                                });
+                            }
+                        } else if (JsonHelper.getInt(json, "e") == 10002) {
+                            json = JsonHelper.getJsonObject(json, "d");
+                            if (json != null) {
+                                json = JsonHelper.getJsonObject(json, "deviceInfo");
+                                mIMEI = JsonHelper.getString(json, "IMEI");
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mBluetoothName.setText(mIMEI);
+                                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                                        editor.clear();
+                                        editor.commit();
+                                        editor.putString("IMEI", mIMEI);
+                                        editor.commit();
+                                    }
+                                });
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                } else { // 请求失败
+                    System.out.println("bindDevice请求失败");
+                }
+            }
+
+            public void onFailure(Call arg0, IOException arg1) {
+                // 请求失败
+                System.out.println("bindDeviceOnFailure" + arg0);
             }
         });
     }

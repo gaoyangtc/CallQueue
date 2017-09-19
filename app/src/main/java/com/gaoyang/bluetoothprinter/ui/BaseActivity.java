@@ -122,7 +122,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (socket == null || !socket.isConnected()) {
                 ToastUtil.show("连接打印机失败");
             } else {
-                ToastUtil.show("连接成功！");
+                ToastUtil.show("打印成功！");
             }
 
             super.onPostExecute(socket);
