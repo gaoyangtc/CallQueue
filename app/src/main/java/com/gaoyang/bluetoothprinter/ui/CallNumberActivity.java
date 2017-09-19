@@ -5,10 +5,13 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,6 +32,7 @@ import com.gaoyang.bluetoothprinter.utils.AndroidUtil;
 import com.gaoyang.bluetoothprinter.utils.JsonHelper;
 import com.gaoyang.bluetoothprinter.utils.MD5Util;
 import com.gaoyang.bluetoothprinter.utils.PrintUtil;
+import com.gaoyang.bluetoothprinter.utils.TextToSpeechUtils;
 import com.gaoyang.bluetoothprinter.utils.ToastUtil;
 import com.gaoyang.bluetoothprinter.utils.ZXingUtils;
 
@@ -40,6 +44,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -51,6 +56,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.gaoyang.bluetoothprinter.application.GlobalApp.getContext;
 
 public class CallNumberActivity extends BaseActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
@@ -68,6 +75,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private Socket mSocket;
 
     private TextView mBluetoothName;
+    private TextView mNotice;
     private int mTotalPage;
     private ImageView[] mPointImg;
     private SiteInfo mSiteInfo;
@@ -101,6 +109,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private void initView() {
         mBluetoothName = (TextView) findViewById(R.id.act_call_number_device_name);
+        mNotice = (TextView) findViewById(R.id.act_call_number_notice);
 
         mSharedPreferences = getSharedPreferences("loginUser", Context.MODE_PRIVATE);
         String imei = mSharedPreferences.getString("IMEI", "");
@@ -112,6 +121,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         } else {
             mBluetoothName.setText(imei);
         }
+        bindDevice();
         mCallNumberPager = (ViewPager) findViewById(R.id.act_call_number_pager);
         mBusinessAdapter = new BusinessAdapter();
         mCallNumberPager.setAdapter(mBusinessAdapter);
@@ -146,8 +156,14 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 @Override
                 public void run() {
                     String data = (String) args[0];
-
                     Log.e("gaoy-->>>", data);
+                    Random rand = new Random();
+                    int num = rand.nextInt(10000);
+                    int window = rand.nextInt(20);
+                    String falseData = "请"+num+"号到"+window+"号窗口";
+                    mNotice.setText(falseData);
+                    TextToSpeechUtils tUtils = TextToSpeechUtils.getInstance(CallNumberActivity.this);
+                    tUtils.speakText(falseData);
                 }
             });
         }
@@ -280,6 +296,20 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
             if (!TextUtils.isEmpty(info.getQueueCount())) {
                 holder.mNumberView.setText(info.getQueueCount());
+                int num = Integer.parseInt(info.getQueueCount());
+                if (num < 3) {
+                    Resources resources = getContext().getResources();
+                    Drawable btnDrawable = resources.getDrawable(R.drawable.bg_gridview_number_green);
+                    holder.mNumberView.setBackgroundDrawable(btnDrawable);
+                }else if (num < 11) {
+                    Resources resources = getContext().getResources();
+                    Drawable btnDrawable = resources.getDrawable(R.drawable.bg_gridview_number_yellow);
+                    holder.mNumberView.setBackgroundDrawable(btnDrawable);
+                }else {
+                    Resources resources = getContext().getResources();
+                    Drawable btnDrawable = resources.getDrawable(R.drawable.bg_gridview_number_red);
+                    holder.mNumberView.setBackgroundDrawable(btnDrawable);
+                }
             }
 
             holder.mCallNumberView.setOnClickListener(new View.OnClickListener() {
@@ -459,7 +489,8 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
      */
     public void bindDevice() {
         // 将参数按ASCII码从小到大排序并拼串(大写字母ASCII值小于小写字母 A-Z=65-90 a-z=97-122)
-        String str = "IMEI=" + "123" + "&key=" + APP_KEY;
+        String IMEI = "123";
+        String str = "IMEI=" + IMEI + "&key=" + APP_KEY;
         MD5Util getMD5 = new MD5Util();
         // 对拼串进行MD5处理
         String md5 = getMD5.GetMD5Code(str);
@@ -469,7 +500,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         System.out.println("signature=" + signature);
 
         RequestBody body = new FormBody.Builder()
-                .add("IMEI", "123")
+                .add("IMEI", IMEI)
                 .add("signature", signature)
                 .build();
 
@@ -505,7 +536,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                         } else if (JsonHelper.getInt(json, "e") == 10002) {
                             json = JsonHelper.getJsonObject(json, "d");
                             if (json != null) {
-                                json = JsonHelper.getJsonObject(json, "deviceInfo");
+                                json = JsonHelper.getJsonObject(json, "deviceId");
                                 mIMEI = JsonHelper.getString(json, "IMEI");
                                 runOnUiThread(new Runnable() {
                                     @Override
