@@ -166,13 +166,16 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 public void run() {
                     String data = (String) args[0];
                     Log.e("gaoy-->>>", data);
-                    Random rand = new Random();
-                    int num = rand.nextInt(10000);
-                    int window = rand.nextInt(20);
-                    String falseData = "请"+num+"号到"+window+"号窗口";
-                    mNotice.setText(falseData);
+                    JSONObject json = null;
+                    try {
+                        json = new JSONObject(data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String voice = JsonHelper.getString(json, "voice");
+                    mNotice.setText(voice);
                     TextToSpeechUtils tUtils = TextToSpeechUtils.getInstance(CallNumberActivity.this);
-                    tUtils.speakText(falseData);
+                    tUtils.speakText(voice);
                 }
             });
         }
