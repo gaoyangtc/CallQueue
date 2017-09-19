@@ -11,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -74,15 +73,18 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private Socket mSocket;
 
-    private TextView mBluetoothName;
+    private TextView mIMEIName;
     private TextView mNotice;
     private int mTotalPage;
     private ImageView[] mPointImg;
     private SiteInfo mSiteInfo;
     private Bitmap mBitmap;
-    private String mIMEI;
+    private String mDeviceID;
 
     private SharedPreferences mSharedPreferences;
+
+    private String mIMEI;
+    private String login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,38 +92,44 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_call_number);
 
-        try {
-            mSocket = IO.socket("http://47.93.249.4:2120");
+//        mIMEI = AndroidUtil.getIMEI();
+        mIMEI = "123";
+        login = "123";
+        initView();
 
-//            mSocket.on(Socket.EVENT_CONNECT, onConnect);
-//            mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-//            mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-//            mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
+
+    }
+
+    private void initSocket() {
+        if (TextUtils.isEmpty(mDeviceID)) {
+            return;
+        }
+        try {
+            mSocket = IO.socket("http://call-number.wuchengjun.cn:2120");
             mSocket.on("connect", onConnect);
             mSocket.on("new_msg", onNewMessage);
             mSocket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-
-        initView();
     }
 
     private void initView() {
-        mBluetoothName = (TextView) findViewById(R.id.act_call_number_device_name);
+        mIMEIName = (TextView) findViewById(R.id.act_call_number_device_name);
         mNotice = (TextView) findViewById(R.id.act_call_number_notice);
 
         mSharedPreferences = getSharedPreferences("loginUser", Context.MODE_PRIVATE);
-        String imei = mSharedPreferences.getString("IMEI", "");
-        if (TextUtils.isEmpty(imei)) {
+        mDeviceID = mSharedPreferences.getString("deviceId", "");
+        if (TextUtils.isEmpty(mDeviceID)) {
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.clear();
             editor.commit();
             bindDevice();
         } else {
-            mBluetoothName.setText(imei);
+            mIMEIName.setText(mIMEI);
+            initSocket();
         }
-        bindDevice();
+
         mCallNumberPager = (ViewPager) findViewById(R.id.act_call_number_pager);
         mBusinessAdapter = new BusinessAdapter();
         mCallNumberPager.setAdapter(mBusinessAdapter);
@@ -142,8 +150,9 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ToastUtil.show("连接成功");
-                    mSocket.emit("login", "123");
+                    ToastUtil.show("socket连接成功, 当前设备ID="+mDeviceID+", IMEI="+mIMEI);
+//                    mSocket.emit("login", mDeviceID);
+                    mSocket.emit("login", login);
                 }
             });
         }
@@ -334,7 +343,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
      */
     public void getHomeList() {
         RequestBody body = new FormBody.Builder()
-                .add("IMEI", "123")
+                .add("IMEI", mIMEI)
                 .build();
 
         Request request = new Request.Builder()
@@ -405,7 +414,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private void getOrder(String businessId) {
         // 设备串号
-        String IMEI = "123";
+        String IMEI = mIMEI;
         // 将参数按ASCII码从小到大排序并拼串(大写字母ASCII值小于小写字母 A-Z=65-90 a-z=97-122)
         String str = "IMEI=" + IMEI + "&businessId=" + businessId + "&key=" + APP_KEY;
         MD5Util getMD5 = new MD5Util();
@@ -489,7 +498,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
      */
     public void bindDevice() {
         // 将参数按ASCII码从小到大排序并拼串(大写字母ASCII值小于小写字母 A-Z=65-90 a-z=97-122)
-        String IMEI = "123";
+        String IMEI = mIMEI;
         String str = "IMEI=" + IMEI + "&key=" + APP_KEY;
         MD5Util getMD5 = new MD5Util();
         // 对拼串进行MD5处理
@@ -521,14 +530,14 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                         if (JsonHelper.getInt(json, "e") == 0) {
                             json = JsonHelper.getJsonObject(json, "d");
                             if (json != null) {
-                                json = JsonHelper.getJsonObject(json, "deviceInfo");
-                                mIMEI = JsonHelper.getString(json, "IMEI");
+                                mDeviceID = JsonHelper.getString(json, "deviceId");
+                                initSocket();
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mBluetoothName.setText(mIMEI);
+                                        mIMEIName.setText(mIMEI);
                                         SharedPreferences.Editor editor = mSharedPreferences.edit();
-                                        editor.putString("IMEI", mIMEI);
+                                        editor.putString("deviceId", mDeviceID);
                                         editor.commit();
                                     }
                                 });
@@ -536,16 +545,16 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                         } else if (JsonHelper.getInt(json, "e") == 10002) {
                             json = JsonHelper.getJsonObject(json, "d");
                             if (json != null) {
-                                json = JsonHelper.getJsonObject(json, "deviceId");
-                                mIMEI = JsonHelper.getString(json, "IMEI");
+                                mDeviceID = JsonHelper.getString(json, "deviceId");
+                                initSocket();
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        mBluetoothName.setText(mIMEI);
+                                        mIMEIName.setText(mIMEI);
                                         SharedPreferences.Editor editor = mSharedPreferences.edit();
                                         editor.clear();
                                         editor.commit();
-                                        editor.putString("IMEI", mIMEI);
+                                        editor.putString("deviceId", mDeviceID);
                                         editor.commit();
                                     }
                                 });
