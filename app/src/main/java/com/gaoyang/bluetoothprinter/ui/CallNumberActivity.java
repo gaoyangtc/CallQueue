@@ -75,7 +75,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private Socket mSocket;
 
     private TextView mIMEIName;
-    private TextView mNotice;
+    private com.dalong.marqueeview.MarqueeView mNotice;
     private int mTotalPage;
     private ImageView[] mPointImg;
     private Bitmap mBitmap;
@@ -121,7 +121,9 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private void initView() {
         mIMEIName = (TextView) findViewById(R.id.act_call_number_device_name);
-        mNotice = (TextView) findViewById(R.id.act_call_number_notice);
+        mNotice = (com.dalong.marqueeview.MarqueeView) findViewById(R.id.act_call_number_notice);
+//        mNotice.setText("叫号通知");
+        mNotice.startScroll();
 
         mSharedPreferences = getSharedPreferences("loginUser", Context.MODE_PRIVATE);
         mDeviceID = mSharedPreferences.getString("deviceId", "");
