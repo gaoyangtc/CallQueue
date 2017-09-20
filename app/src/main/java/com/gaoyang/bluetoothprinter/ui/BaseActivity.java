@@ -22,7 +22,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private BluetoothSocket mSocket;
     private BluetoothStateReceiver mBluetoothStateReceiver;
     private AsyncTask mConnectTask;
-    private ProgressDialog mProgressDialog;
+    private ProgressDialog mProgressDialogCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,26 +118,28 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(BluetoothSocket socket) {
-            mProgressDialog.dismiss();
+            mProgressDialogCall.dismiss();
             if (socket == null || !socket.isConnected()) {
                 ToastUtil.show("连接打印机失败");
             } else {
                 ToastUtil.show("打印成功！");
+                CallNumberActivity.printSuccess();
             }
 
             super.onPostExecute(socket);
         }
     }
 
+
     protected void showProgressDialog(String message) {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.setCancelable(false);
+        if (mProgressDialogCall == null) {
+            mProgressDialogCall = new ProgressDialog(this);
+            mProgressDialogCall.setCanceledOnTouchOutside(false);
+            mProgressDialogCall.setCancelable(false);
         }
-        mProgressDialog.setMessage(message);
-        if (!mProgressDialog.isShowing()) {
-            mProgressDialog.show();
+        mProgressDialogCall.setMessage(message);
+        if (!mProgressDialogCall.isShowing()) {
+            mProgressDialogCall.show();
         }
     }
 

@@ -10,6 +10,7 @@ import com.github.promeg.pinyinhelper.Pinyin;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 /**
  * 蓝牙打印工具类
@@ -322,37 +323,32 @@ public class PrintUtil {
         return targetBmp;
     }
 
-    public static void printTest(BluetoothSocket bluetoothSocket, Bitmap bitmap, String number, String count, String business) {
+    public static void printTest(BluetoothSocket bluetoothSocket, Bitmap bitmap, ArrayList list) {
 
         try {
             PrintUtil pUtil = new PrintUtil(bluetoothSocket.getOutputStream(), "GBK");
             // 店铺名 居中 放大
-            pUtil.printAlignment(1);
-            pUtil.printText("北师大服务大厅欢迎您!");
-            pUtil.printLine();
+//            pUtil.printAlignment(1);
+//            pUtil.printText("北航师生服务大厅欢迎您!");
+//            pUtil.printLine();
+//
+//            // 分隔线
+//            pUtil.printDashLine();
+//            pUtil.printAlignment(0);
+//            pUtil.printLine();
+//            pUtil.printLine();
+
+            for (int i = 0; i < list.size(); i++) {
+                String text = (String) list.get(i);
+                pUtil.printText(text);
+                pUtil.printLine();
+            }
 
             // 分隔线
-            pUtil.printDashLine();
-            pUtil.printAlignment(0);
-            pUtil.printLine();
-            pUtil.printLine();
-
-            pUtil.printText(number);
-            pUtil.printLine();
-            pUtil.printLine();
-
-            pUtil.printText(count);
-            pUtil.printLine();
-            pUtil.printLine();
-
-            pUtil.printText(business);
-            pUtil.printLine();
-
-            // 分隔线
-            pUtil.printDashLine();
-
-            pUtil.printText("   欢迎扫描二维码下载\"为我点赞\"!");
-            pUtil.printLine();
+//            pUtil.printDashLine();
+//
+//            pUtil.printText("   欢迎扫描二维码下载\"为我点赞\"!");
+//            pUtil.printLine();
 
             pUtil.printBitmap(bitmap);
 
