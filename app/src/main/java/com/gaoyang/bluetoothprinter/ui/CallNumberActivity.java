@@ -1,5 +1,6 @@
 package com.gaoyang.bluetoothprinter.ui;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
@@ -25,7 +26,6 @@ import com.gaoyang.bluetoothprinter.R;
 import com.gaoyang.bluetoothprinter.adapter.BaseListAdapter;
 import com.gaoyang.bluetoothprinter.adapter.BusinessAdapter;
 import com.gaoyang.bluetoothprinter.module.BusinessInfo;
-import com.gaoyang.bluetoothprinter.module.SiteInfo;
 import com.gaoyang.bluetoothprinter.resource.URLResource;
 import com.gaoyang.bluetoothprinter.utils.AndroidUtil;
 import com.gaoyang.bluetoothprinter.utils.JsonHelper;
@@ -40,10 +40,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.logging.StreamHandler;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -77,7 +78,6 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private TextView mNotice;
     private int mTotalPage;
     private ImageView[] mPointImg;
-    private SiteInfo mSiteInfo;
     private Bitmap mBitmap;
     private String mDeviceID;
 
@@ -85,6 +85,8 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 
     private String mIMEI;
     private String login;
+    private ArrayList mPrintList;
+    private static ProgressDialog mProgressDialogCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
 //        mIMEI = AndroidUtil.getIMEI();
         mIMEI = "123";
         login = "123";
+        mPrintList = new ArrayList();
         initView();
 
 
@@ -185,8 +188,9 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     public void onConnected(BluetoothSocket socket, int taskType) {
         switch (taskType) {
             case TASK_TYPE_PRINT:
-                PrintUtil.printTest(socket, mBitmap, mSiteInfo.getNumber(), mSiteInfo.getWaitCount(), mSiteInfo.getBusinessInfo());
+                PrintUtil.printTest(socket, mBitmap, mPrintList);
                 break;
+
         }
     }
 
@@ -328,6 +332,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 @Override
                 public void onClick(View v) {
                     getOrder(info.id);
+                    showProgressDialogCall("取号中, 请稍候...");
                 }
             });
             return convertView;
@@ -341,6 +346,22 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         public TextView mNumberView;
     }
 
+    protected void showProgressDialogCall(String message) {
+        if (mProgressDialogCall == null) {
+            mProgressDialogCall = new ProgressDialog(this);
+            mProgressDialogCall.setCanceledOnTouchOutside(false);
+            mProgressDialogCall.setCancelable(false);
+        }
+        mProgressDialogCall.setMessage(message);
+        if (!mProgressDialogCall.isShowing()) {
+            mProgressDialogCall.show();
+        }
+    }
+
+    public static void printSuccess() {
+        System.out.println("printSuccess");
+        CallNumberActivity.mProgressDialogCall.dismiss();
+    }
     /**
      * 获取首页业务List
      */
@@ -456,25 +477,22 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                             if (json != null) {
                                 JSONArray siteList = JsonHelper.getJsonArray(json, "site");
                                 if (siteList != null && siteList.length() > 0) {
-                                    mSiteInfo = new SiteInfo();
+                                    mPrintList.clear();
                                     for (int i = 0; i < siteList.length(); i++) {
                                         json = siteList.optJSONObject(i);
-                                        if (i == 0) {
-                                            mSiteInfo.setNumber(JsonHelper.getString(json, "text"));
-                                        }
-                                        if (i == 1) {
-                                            mSiteInfo.setWaitCount(JsonHelper.getString(json, "text"));
-                                        }
-                                        if (i == 2) {
-                                            mSiteInfo.setBusinessInfo(JsonHelper.getString(json, "text"));
-                                        }
-                                        if (i == 3) {
+                                        System.out.println(i);
+                                        String type = JsonHelper.getString(json, "type");
+                                        String text = JsonHelper.getString(json, "text");
+                                        if (type.equals("1")) {
+                                            mPrintList.add(text);
+                                        }else {
                                             String url = JsonHelper.getString(json, "text");
                                             String width = JsonHelper.getString(json, "width");
                                             String height = JsonHelper.getString(json, "height");
                                             mBitmap = ZXingUtils.createQRImage(url, Integer.valueOf(width), Integer.valueOf(height));
                                         }
                                     }
+                                    System.out.println(mPrintList);
                                     connectDevice(TASK_TYPE_PRINT);
                                 }
                             }
