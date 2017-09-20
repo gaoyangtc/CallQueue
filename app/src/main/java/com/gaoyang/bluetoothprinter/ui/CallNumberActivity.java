@@ -87,6 +87,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
     private String login;
     private ArrayList mPrintList;
     private static ProgressDialog mProgressDialogCall;
+    private TextToSpeechUtils mTTSUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +99,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         mIMEI = "123";
         login = "123";
         mPrintList = new ArrayList();
+        mTTSUtils = TextToSpeechUtils.getInstance(CallNumberActivity.this);
         initView();
 
 
@@ -177,8 +179,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                     }
                     String voice = JsonHelper.getString(json, "voice");
                     mNotice.setText(voice);
-                    TextToSpeechUtils tUtils = TextToSpeechUtils.getInstance(CallNumberActivity.this);
-                    tUtils.speakText(voice);
+                    mTTSUtils.speakText(voice);
                 }
             });
         }
