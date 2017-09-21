@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.manager;
+package cn.rlstech.callnumber.manager;
 
 import java.util.ArrayList;
 import java.util.List;

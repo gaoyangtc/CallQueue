@@ -1,11 +1,11 @@
-package cn.wuchengjun.callnumber.manager;
+package cn.rlstech.callnumber.manager;
 
 import android.content.Context;
 
-import cn.wuchengjun.callnumber.module.BusinessInfo;
-import cn.wuchengjun.callnumber.resource.URLResource;
-import cn.wuchengjun.callnumber.utils.JsonHelper;
-import cn.wuchengjun.callnumber.utils.MD5Util;
+import cn.rlstech.callnumber.resource.URLResource;
+import cn.rlstech.callnumber.utils.JsonHelper;
+import cn.rlstech.callnumber.module.BusinessInfo;
+import cn.rlstech.callnumber.utils.MD5Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,11 +23,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-/**
- * Project: CallQueue
- * Author: GaoYang
- * Date: 2017/9/14 0014
- */
 
 public class HomeListManager extends BaseManager<HomeListManager.HomeListListener> {
 

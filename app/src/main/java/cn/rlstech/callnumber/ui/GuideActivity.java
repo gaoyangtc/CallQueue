@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.ui;
+package cn.rlstech.callnumber.ui;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -18,15 +18,14 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import cn.wuchengjun.callnumber.R;
-import cn.wuchengjun.callnumber.utils.BluetoothUtil;
-import cn.wuchengjun.callnumber.utils.ToastUtil;
+import cn.rlstech.callnumber.utils.BluetoothUtil;
+import cn.rlstech.callnumber.R;
+import cn.rlstech.callnumber.utils.ToastUtil;
 
 import java.util.List;
 
 /**
  * 点赞Pad首页
- * Created by gaoyang.
  */
 public class GuideActivity extends BaseActivity implements View.OnClickListener {
 

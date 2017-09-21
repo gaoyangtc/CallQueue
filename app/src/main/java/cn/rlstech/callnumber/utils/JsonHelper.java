@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

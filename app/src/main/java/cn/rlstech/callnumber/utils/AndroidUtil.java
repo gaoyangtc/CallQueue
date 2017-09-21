@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
@@ -8,7 +8,7 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.WindowManager;
 
-import cn.wuchengjun.callnumber.application.GlobalApp;
+import cn.rlstech.callnumber.application.GlobalApp;
 
 /**
  * Project: CallQueue

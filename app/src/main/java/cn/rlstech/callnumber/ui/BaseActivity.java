@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.ui;
+package cn.rlstech.callnumber.ui;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -12,8 +12,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import cn.wuchengjun.callnumber.utils.BluetoothUtil;
-import cn.wuchengjun.callnumber.utils.ToastUtil;
+import cn.rlstech.callnumber.utils.BluetoothUtil;
+import cn.rlstech.callnumber.utils.ToastUtil;
 
 import java.io.IOException;
 

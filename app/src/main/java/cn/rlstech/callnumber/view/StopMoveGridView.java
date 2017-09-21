@@ -1,15 +1,11 @@
-package cn.wuchengjun.callnumber.view;
+package cn.rlstech.callnumber.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.GridView;
 
-/**
- * Project: trunk
- * Author: GaoYang
- * Date: 2017/1/23 0023
- */
+
 public class StopMoveGridView extends GridView {
     public StopMoveGridView(Context context) {
         super(context);

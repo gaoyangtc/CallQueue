@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.ui;
+package cn.rlstech.callnumber.ui;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -22,18 +21,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import cn.wuchengjun.callnumber.R;
-import cn.wuchengjun.callnumber.adapter.BaseListAdapter;
-import cn.wuchengjun.callnumber.adapter.BusinessAdapter;
-import cn.wuchengjun.callnumber.module.BusinessInfo;
-import cn.wuchengjun.callnumber.resource.URLResource;
-import cn.wuchengjun.callnumber.utils.AndroidUtil;
-import cn.wuchengjun.callnumber.utils.JsonHelper;
-import cn.wuchengjun.callnumber.utils.MD5Util;
-import cn.wuchengjun.callnumber.utils.PrintUtil;
-import cn.wuchengjun.callnumber.utils.TextToSpeechUtils;
-import cn.wuchengjun.callnumber.utils.ToastUtil;
-import cn.wuchengjun.callnumber.utils.ZXingUtils;
+import cn.rlstech.callnumber.adapter.BaseListAdapter;
+import cn.rlstech.callnumber.adapter.BusinessAdapter;
+import cn.rlstech.callnumber.application.GlobalApp;
+import cn.rlstech.callnumber.resource.URLResource;
+import cn.rlstech.callnumber.utils.AndroidUtil;
+import cn.rlstech.callnumber.utils.JsonHelper;
+import cn.rlstech.callnumber.utils.MD5Util;
+import cn.rlstech.callnumber.utils.PrintUtil;
+import cn.rlstech.callnumber.utils.TextToSpeechUtils;
+import cn.rlstech.callnumber.R;
+import cn.rlstech.callnumber.module.BusinessInfo;
+import cn.rlstech.callnumber.utils.ToastUtil;
+import cn.rlstech.callnumber.utils.ZXingUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +44,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.wuchengjun.callnumber.application.GlobalApp;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -107,7 +106,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
             return;
         }
         try {
-            mSocket = IO.socket("http://call-number.wuchengjun.cn:2120");
+            mSocket = IO.socket("http://call-number.rlstech.cn:2120");
             mSocket.on("connect", onConnect);
             mSocket.on("new_msg", onNewMessage);
             mSocket.connect();
@@ -214,7 +213,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         System.out.println("businessInfos="+businessInfos);
         if (businessInfos == null) {
             ToastUtil.show("数据异常, 请检查网络");
-            System.out.println("数据异常, 请检查网络 businessInfos="+businessInfos;
+            System.out.println("数据异常, 请检查网络 businessInfos="+businessInfos);
             return;
         }
         // 计算礼物分页页数
@@ -530,7 +529,7 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         String md5 = getMD5.GetMD5Code(str);
         // 将MD5结果大写 赋值给signature
         String upMD5 = md5.toUpperCase();
-        String signature = upMD5
+        String signature = upMD5;
 
         RequestBody body = new FormBody.Builder()
                 .add("IMEI", IMEI)

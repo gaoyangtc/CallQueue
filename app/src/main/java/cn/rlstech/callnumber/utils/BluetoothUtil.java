@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;

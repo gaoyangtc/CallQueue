@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -6,9 +6,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.TextView;
 import android.widget.Toast;
-import cn.wuchengjun.callnumber.R;
-import cn.wuchengjun.callnumber.application.GlobalApp;
 
+import cn.rlstech.callnumber.application.GlobalApp;
+import cn.rlstech.callnumber.R;
 public class ToastUtil {
 
     private static Toast sToast;

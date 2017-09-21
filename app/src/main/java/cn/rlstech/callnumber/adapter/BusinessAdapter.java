@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.adapter;
+package cn.rlstech.callnumber.adapter;
 
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
@@ -7,11 +7,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Project: trunk
- * Author: GaoYang
- * Date: 2016/12/21 0021
- */
+
 public class BusinessAdapter extends PagerAdapter {
     private List<View> mList;
 

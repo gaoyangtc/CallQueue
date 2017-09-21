@@ -15,7 +15,7 @@
  * the License.
  */
 
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

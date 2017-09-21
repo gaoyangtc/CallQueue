@@ -1,15 +1,11 @@
-package cn.wuchengjun.callnumber.utils;
+package cn.rlstech.callnumber.utils;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 
 import java.util.Locale;
 
-/**
- * Project: BluetoothPrinter
- * Author: GaoYang
- * Date: 2017/9/10 0010
- */
+
 
 public class TextToSpeechUtils {
     private Context context;

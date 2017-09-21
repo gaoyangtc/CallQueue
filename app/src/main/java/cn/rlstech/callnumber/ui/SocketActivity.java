@@ -1,11 +1,10 @@
-package cn.wuchengjun.callnumber.ui;
+package cn.rlstech.callnumber.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import cn.wuchengjun.callnumber.R;
+import cn.rlstech.callnumber.R;
 
 import java.net.URISyntaxException;
 

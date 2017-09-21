@@ -1,12 +1,7 @@
-package cn.wuchengjun.callnumber.application;
+package cn.rlstech.callnumber.application;
 
 import android.app.Application;
 
-/**
- * Project: CallQueue
- * Author: GaoYang
- * Date: 2017/9/14 0014
- */
 
 public class GlobalApp extends Application {
 

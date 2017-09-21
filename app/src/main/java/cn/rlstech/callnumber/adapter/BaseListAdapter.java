@@ -1,4 +1,4 @@
-package cn.wuchengjun.callnumber.adapter;
+package cn.rlstech.callnumber.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
