@@ -13,4 +13,14 @@
 
     <string name="bluetooth_loading">搜索蓝牙设备中...</string>
 
+    <string name="remind">提醒</string>
+
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+
+    <string name="switch_wifi">切换WIFI</string>
+    <string name="finish_app">退出应用</string>
+    <string name="mobile_net_watch">您当前为移动数据网络，点击确定切换WIFI</string>
+    <string name="mobile_no_net">您当前未连接网络，点击确定切换WIFI</string>
+
 </resources>

@@ -24,6 +24,17 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/act_guide_bluetooth_switch_tip"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="蓝牙未开启"
+        android:textSize="@dimen/text_size_48px"
+        />
+
+    <TextView
+        android:id="@+id/act_guide_bluetooth_tip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
@@ -32,6 +43,7 @@
         android:text="选择一个已配对的打印设备"
         android:textColor="#333333"
         android:textSize="16sp"
+        android:visibility="gone"
         />
 
     <ListView
@@ -39,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:visibility="gone"
         />
 
     <LinearLayout

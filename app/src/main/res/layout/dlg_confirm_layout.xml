@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_confirm_dlg"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/dlg_confirm_title_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center_horizontal"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:text="@string/remind"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_large"
+        />
+
+    <cn.rlstech.callnumber.view.AutoAlignTextView
+        android:id="@+id/dlg_confirm_content_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left|center_vertical"
+        android:lineSpacingMultiplier="1.2"
+        android:minHeight="72dp"
+        android:padding="12dp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_normal"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:background="@color/color_E3E3E3"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        >
+
+        <Button
+            android:id="@+id/dlg_confirm_negative_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_bg_confirm_dlg_btn"
+            android:text="@string/confirm"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            />
+
+        <View
+            android:id="@+id/dlg_confirm_bottom_line_view"
+            android:layout_width="0.7dp"
+            android:layout_height="match_parent"
+            android:background="@color/color_E3E3E3"
+            />
+
+        <Button
+            android:id="@+id/dlg_confirm_positive_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/selector_bg_confirm_dlg_btn"
+            android:text="@string/cancel"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_large"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

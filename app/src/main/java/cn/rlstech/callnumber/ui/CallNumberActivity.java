@@ -91,14 +91,14 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.activity_call_number);
 
+        GlobalApp.getContext().onActivityCreate(this);
+
 //        mIMEI = AndroidUtil.getIMEI();
         mIMEI = "123";
         login = "123";
         mPrintList = new ArrayList();
         mTTSUtils = TextToSpeechUtils.getInstance(CallNumberActivity.this);
         initView();
-
-
     }
 
     private void initSocket() {
@@ -597,5 +597,11 @@ public class CallNumberActivity extends BaseActivity implements View.OnClickList
                 System.out.println("bindDeviceOnFailure" + arg0);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GlobalApp.getContext().onActivityDestroy(this);
     }
 }

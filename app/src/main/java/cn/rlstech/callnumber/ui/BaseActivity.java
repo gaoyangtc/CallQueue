@@ -12,10 +12,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.io.IOException;
+
 import cn.rlstech.callnumber.utils.BluetoothUtil;
 import cn.rlstech.callnumber.utils.ToastUtil;
-
-import java.io.IOException;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -129,7 +129,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             super.onPostExecute(socket);
         }
     }
-
 
     protected void showProgressDialog(String message) {
         if (mProgressDialogCall == null) {
