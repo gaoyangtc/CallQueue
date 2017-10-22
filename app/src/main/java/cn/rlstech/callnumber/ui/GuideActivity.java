@@ -18,19 +18,29 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+
+import java.io.File;
 import java.util.List;
 
 import cn.rlstech.callnumber.R;
 import cn.rlstech.callnumber.application.GlobalApp;
+import cn.rlstech.callnumber.dialog.AppUpdateDialog;
 import cn.rlstech.callnumber.dialog.ConfirmDialog;
+import cn.rlstech.callnumber.manager.FileLoadManager;
+import cn.rlstech.callnumber.net.NormalRequest;
+import cn.rlstech.callnumber.net.RequestError;
+import cn.rlstech.callnumber.net.RequestInfo;
+import cn.rlstech.callnumber.net.RequestManager;
 import cn.rlstech.callnumber.utils.AndroidUtil;
 import cn.rlstech.callnumber.utils.BluetoothUtil;
+import cn.rlstech.callnumber.utils.LogUtil;
 import cn.rlstech.callnumber.utils.ToastUtil;
 
 /**
  * 点赞Pad首页
  */
-public class GuideActivity extends BaseActivity implements View.OnClickListener {
+public class GuideActivity extends BaseActivity implements View.OnClickListener, FileLoadManager.FileLoadListener {
 
     private TextView mBluetoothSwitchView;
     private ListView mBluetoothListView;
@@ -49,6 +59,9 @@ public class GuideActivity extends BaseActivity implements View.OnClickListener 
         setContentView(R.layout.act_guide_layout);
 
         GlobalApp.getContext().onActivityCreate(this);
+        getAppUpdateInfo();
+        FileLoadManager.getInstance().init(getApplicationContext());
+        FileLoadManager.getInstance().addListener(this);
 
         initView();
     }
@@ -143,6 +156,79 @@ public class GuideActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    /**
+     * 获取app更新信息
+     */
+    private void getAppUpdateInfo() {
+        if (AndroidUtil.getNetworkType() == AndroidUtil.NetType.NO_NET) { // 沒有网络
+            return;
+        }
+        AppUpdateDialog.newInstance(new AppUpdateDialog.AppUpdateDialogListener() {
+            @Override
+            public void onClicked(AppUpdateDialog.AppUpdateDialogButton btn) {
+                if (btn == AppUpdateDialog.AppUpdateDialogButton.POSITIVE) { // 立即更新
+                    FileLoadManager.getInstance().commit("http://www.wencyv.com/CallNumber_1.0_release6.apk");
+                }
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onDismiss() {
+            }
+        }, "有新版本更新", "立即更新", "取消", "更新内容").show(this);
+
+//        String url = Resource.getAppUpdate(); // 获取更新接口
+//        RequestInfo requestInfo = new RequestInfo(Request.Method.POST, "");
+//        NormalRequest request = new NormalRequest(requestInfo, new RequestManager.RequestListener() {
+//            @Override
+//            public void onResponse(String data, RequestError error) {
+//                if (error != null && !TextUtils.isEmpty(error.getMsg())) {
+//                    return;
+//                } else if (!TextUtils.isEmpty(data)) {
+//                }
+//            }
+//        });
+//        RequestManager.instance().request(this, request);
+    }
+
+    @Override
+    public void onFileLoadListener() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                upGradeApk();
+            }
+        });
+    }
+
+    /**
+     * 升級app
+     */
+    private void upGradeApk() {
+        StringBuilder hint = new StringBuilder();
+        hint.append("为我点赞(").append("1.0.0").append(")将替换当前版本，会保存所有以前的用户数据。").append("\n").append("确定要安装吗？");
+        AppUpdateDialog.newInstance(new AppUpdateDialog.AppUpdateDialogListener() {
+            @Override
+            public void onClicked(AppUpdateDialog.AppUpdateDialogButton btn) {
+                if (btn == AppUpdateDialog.AppUpdateDialogButton.POSITIVE) { //安装
+                    String name = "CallNumber_1.0_release6.apk";
+                    FileLoadManager.getInstance().installAPK(GuideActivity.this, new File(FileLoadManager.getPath(), name));
+                }
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onDismiss() {
+            }
+        }, "提示", "安装", "取消", hint).show(this);
+    }
+
     private class DeviceListAdapter extends ArrayAdapter<BluetoothDevice> {
 
         DeviceListAdapter(Context context) {
@@ -196,6 +282,7 @@ public class GuideActivity extends BaseActivity implements View.OnClickListener 
         super.onDestroy();
 
         GlobalApp.getContext().onActivityDestroy(this);
+        FileLoadManager.getInstance().removeListener(this);
 
         mAdapter.clear();
     }

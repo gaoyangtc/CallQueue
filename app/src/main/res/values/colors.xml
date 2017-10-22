@@ -10,4 +10,8 @@
     <color name="black">#000000</color>
     <color name="color_E3E3E3">#E3E3E3</color>
 
+    <!-- mian_tab -->
+    <color name="main_tab_txt_selected">#FF7424</color>
+    <color name="main_tab_txt_normal">#80000000</color>
+
 </resources>
